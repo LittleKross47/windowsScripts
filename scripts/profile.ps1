@@ -2,17 +2,20 @@ Import-Module posh-git
 Import-Module oh-my-posh
 Set-Theme Paradox
 Set-Alias code code-insiders
-Function project() {
+Set-Alias vi vim
+Function prj() {
     Param(
         [Parameter(Mandatory=$true,Position=0)]
         [string]$command,
         [Parameter(Mandatory=$true,Position=1,ParameterSetName='new')]
         [string]$projectName,
         [Parameter(ParameterSetName='new')]
-        [string]$path
+        [string]$path,
+        [Parameter(ParameterSetName='new')]
+        [switch]$private
     )
-    if($command = "new"){
-        Write-Host 'Creating' $projectName '...'
+    if($command -eq "generate"){
+        Write-Host 'Creating' $projectName '...' -ForegroundColor green
         if($path -ne ('')){
             Write-Host $path
             Set-Location $path
@@ -20,7 +23,18 @@ Function project() {
         else{
             Set-Location '~/Sync/Git'
         }
-        mkdir $projectName
+        if($private){
+            gh repo create $projectName -y --private
+        }
+        else{
+            gh repo create $projectName -y --public
+        }
         Set-Location $projectName
+        New-Item README.md
+        git add .
+        git commit -m "initial commit"
+        git push --set-upstream origin master
     }
+else{get-command prj -get-syntax}
 }
+Clear-Host
