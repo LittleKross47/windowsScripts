@@ -18,8 +18,9 @@ Function project() {
             Set-Location $path
         }
         else{
-            Set-Location 'C:/users/'$env:USERNAME'/Sync/Git'
+            Set-Location '~/Sync/Git'
         }
-
+        mkdir $projectName
+        Set-Location $projectName
     }
 }
